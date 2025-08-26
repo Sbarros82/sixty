@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sixty - Editor de Vídeo Inteligente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <header class="text-center py-4">
+            <h1 class="display-4 fw-bold text-primary">
+                <i class="fas fa-video me-3"></i>Sixty
+            </h1>
+            <p class="lead text-muted">Editor de Vídeo Inteligente com IA</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <!-- Informações sobre o formato -->
+                <div class="alert alert-info border-0 shadow-sm mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-info-circle me-2"></i>Formato de Saída
+                            </h6>
+                            <p class="mb-0">
+                                <strong>Vídeo:</strong> MP4 (H.264) | 
+                                <strong>Formato:</strong> 9:16 (1080x1920) | 
+                                <strong>Áudio:</strong> AAC | 
+                                <strong>Legendas:</strong> Embutidas no vídeo | 
+                                <strong>Estilo:</strong> Fonte 11, até 3 linhas na parte inferior
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <span class="badge bg-success">
+                                <i class="fas fa-check me-1"></i>Pronto para redes sociais
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informações sobre variações -->
+                <div class="alert alert-warning border-0 shadow-sm mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-magic me-2"></i>Sistema de Variações Inteligentes
+                            </h6>
+                            <p class="mb-0">
+                                <strong>🎯 Variações Automáticas:</strong> Cada processamento gera cortes diferentes | 
+                                <strong>📊 Vídeos Longos:</strong> Até 30 min = variação média, +30 min = variação avançada | 
+                                <strong>🔄 Padrões:</strong> Linear, exponencial, agrupamentos e distribuição uniforme
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-random me-1"></i>Sem repetição
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Form -->
+                <div class="card shadow-lg border-0 mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-upload me-2"></i>Processar Vídeo
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Tabs para escolher método -->
+                        <ul class="nav nav-tabs mb-3" id="uploadTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="file-tab" data-bs-toggle="tab" data-bs-target="#file-upload" type="button" role="tab">
+                                    <i class="fas fa-upload me-2"></i>Upload de Arquivo
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="url-tab" data-bs-toggle="tab" data-bs-target="#url-upload" type="button" role="tab">
+                                    <i class="fab fa-youtube me-2"></i>URL do YouTube
+                                </button>
+                            </li>
+                        </ul>
+
+                        <!-- Conteúdo das tabs -->
+                        <div class="tab-content" id="uploadTabContent">
+                            <!-- Tab Upload de Arquivo -->
+                            <div class="tab-pane fade show active" id="file-upload" role="tabpanel">
+                                <form id="fileForm" enctype="multipart/form-data">
+                                    <div class="mb-3">
+                                        <label for="videoFile" class="form-label">
+                                            <i class="fas fa-video me-2"></i>Selecionar Vídeo
+                                        </label>
+                                        <input type="file" class="form-control" id="videoFile" name="video_file" 
+                                               accept=".mp4,.mov,.avi,.mkv,.webm" required>
+                                        <div class="form-text">
+                                            Formatos suportados: MP4, MOV, AVI, MKV, WEBM (máx. 500MB)
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="durationFile" class="form-label">
+                                            <i class="fas fa-clock me-2"></i>Duração dos Cortes
+                                        </label>
+                                        <select class="form-select" id="durationFile" name="duration" required>
+                                            <option value="15">15 segundos</option>
+                                            <option value="30" selected>30 segundos</option>
+                                            <option value="60">60 segundos</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="templateFile" class="form-label">
+                                            <i class="fas fa-palette me-2"></i>Estilo de Edição
+                                        </label>
+                                        <select class="form-select" id="templateFile" name="template">
+                                            <option value="youtube" selected>YouTube - Cortes dinâmicos</option>
+                                            <option value="tiktok">TikTok - Vertical vibrante</option>
+                                            <option value="instagram">Instagram - Elegante</option>
+                                            <option value="professional">Profissional - Cinematográfico</option>
+                                        </select>
+                                        <div class="form-text">Escolha o estilo de edição para seus vídeos</div>
+                                    </div>
+
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary btn-lg" id="processFileBtn">
+                                            <i class="fas fa-magic me-2"></i>Processar Vídeo
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Tab URL do YouTube -->
+                            <div class="tab-pane fade" id="url-upload" role="tabpanel">
+                                <form id="urlForm">
+                                    <div class="mb-3">
+                                        <label for="videoUrl" class="form-label">
+                                            <i class="fab fa-youtube me-2"></i>URL do YouTube
+                                        </label>
+                                        <input type="url" class="form-control" id="videoUrl" 
+                                               placeholder="https://www.youtube.com/watch?v=... ou digite 'demo'">
+                                        <div class="form-text">
+                                            Cole a URL do vídeo do YouTube ou digite <strong>"demo"</strong> para modo de demonstração
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="durationUrl" class="form-label">
+                                            <i class="fas fa-clock me-2"></i>Duração dos Cortes
+                                        </label>
+                                        <select class="form-select" id="durationUrl" required>
+                                            <option value="15">15 segundos</option>
+                                            <option value="30" selected>30 segundos</option>
+                                            <option value="60">60 segundos</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="templateUrl" class="form-label">
+                                            <i class="fas fa-palette me-2"></i>Estilo de Edição
+                                        </label>
+                                        <select class="form-select" id="templateUrl">
+                                            <option value="youtube" selected>YouTube - Cortes dinâmicos</option>
+                                            <option value="tiktok">TikTok - Vertical vibrante</option>
+                                            <option value="instagram">Instagram - Elegante</option>
+                                            <option value="professional">Profissional - Cinematográfico</option>
+                                        </select>
+                                        <div class="form-text">Escolha o estilo de edição para seus vídeos</div>
+                                    </div>
+
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary btn-lg" id="processUrlBtn">
+                                            <i class="fas fa-magic me-2"></i>Processar URL
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Processing Status -->
+                <div class="card shadow-lg border-0 mb-4" id="processingCard" style="display: none;">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cogs me-2"></i>Processando Vídeo
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Processando...</span>
+                        </div>
+                        <h6 id="processingStatus">Iniciando processamento...</h6>
+                        <div class="progress mt-3">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="card shadow-lg border-0" id="resultsCard" style="display: none;">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-check-circle me-2"></i>Cortes Gerados
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="cutsContainer">
+                            <!-- Cortes serão inseridos aqui -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentProjectId = null;
+
+        // Upload de arquivo
+        document.getElementById('fileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('videoFile');
+            const duration = document.getElementById('durationFile').value;
+            
+            if (!fileInput.files[0]) {
+                alert('Por favor, selecione um arquivo de vídeo');
+                return;
+            }
+
+            // Mostrar card de processamento
+            document.getElementById('processingCard').style.display = 'block';
+            document.getElementById('resultsCard').style.display = 'none';
+            document.getElementById('processFileBtn').disabled = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('video_file', fileInput.files[0]);
+                formData.append('duration', duration);
+                formData.append('template', document.getElementById('templateFile').value);
+
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentProjectId = data.project_id;
+                    showResults(data.cuts);
+                } else {
+                    throw new Error(data.error || 'Erro desconhecido');
+                }
+
+            } catch (error) {
+                alert('Erro ao processar vídeo: ' + error.message);
+            } finally {
+                document.getElementById('processingCard').style.display = 'none';
+                document.getElementById('processFileBtn').disabled = false;
+            }
+        });
+
+        // Upload via URL
+        document.getElementById('urlForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const videoUrl = document.getElementById('videoUrl').value;
+            const duration = document.getElementById('durationUrl').value;
+            
+            if (!videoUrl) {
+                alert('Por favor, insira uma URL do YouTube válida ou digite "demo"');
+                return;
+            }
+
+            // Mostrar card de processamento
+            document.getElementById('processingCard').style.display = 'block';
+            document.getElementById('resultsCard').style.display = 'none';
+            document.getElementById('processUrlBtn').disabled = true;
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        video_url: videoUrl,
+                        duration: parseInt(duration),
+                        template: document.getElementById('templateUrl').value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentProjectId = data.project_id;
+                    showResults(data.cuts);
+                } else {
+                    throw new Error(data.error || 'Erro desconhecido');
+                }
+
+            } catch (error) {
+                alert('Erro ao processar vídeo: ' + error.message);
+            } finally {
+                document.getElementById('processingCard').style.display = 'none';
+                document.getElementById('processUrlBtn').disabled = false;
+            }
+        });
+
+        function showResults(cuts) {
+            const container = document.getElementById('cutsContainer');
+            container.innerHTML = '';
+
+            cuts.forEach((cut, index) => {
+                const cutCard = document.createElement('div');
+                cutCard.className = 'card mb-3 border-0 shadow-sm';
+                cutCard.innerHTML = `
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="card-title">
+                                    <i class="fas fa-cut me-2 text-primary"></i>Corte ${cut.id}
+                                </h6>
+                                <p class="card-text text-muted">
+                                    <i class="fas fa-clock me-1"></i>
+                                    ${cut.start_time}s - ${cut.end_time}s (${cut.duration}s)
+                                </p>
+                                <p class="card-text">${cut.summary}</p>
+                                <div class="format-info">
+                                    <small class="text-info">
+                                        <i class="fas fa-video me-1"></i>
+                                        <strong>Formato:</strong> MP4 (H.264) 9:16 | 
+                                        <i class="fas fa-closed-captioning me-1"></i>
+                                        <strong>Legendas:</strong> Embutidas | 
+                                        <i class="fas fa-palette me-1"></i>
+                                        <strong>Estilo:</strong> Fonte 11, até 3 linhas
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="btn-group-vertical w-100">
+                                    <a href="/download/${currentProjectId}/${cut.id}" 
+                                       class="btn btn-outline-primary btn-sm mb-2">
+                                        <i class="fas fa-download me-1"></i>Download MP4
+                                    </a>
+                                    <a href="/download/srt/${currentProjectId}/${cut.id}" 
+                                       class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-closed-captioning me-1"></i>Download SRT
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Preview do vídeo diretamente na tela -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="video-preview-container">
+                                    <video controls class="w-100" style="max-height: 300px; border-radius: 8px;">
+                                        <source src="/preview/${currentProjectId}/${cut.id}" type="video/mp4">
+                                        Seu navegador não suporta o elemento de vídeo.
+                                    </video>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(cutCard);
+            });
+
+            document.getElementById('resultsCard').style.display = 'block';
+        }
+
+        // Simular progresso durante processamento
+        function updateProgress(step) {
+            const status = document.getElementById('processingStatus');
+            const progressBar = document.querySelector('.progress-bar');
+            
+            const steps = [
+                'Baixando vídeo do YouTube...',
+                'Extraindo áudio...',
+                'Transcrevendo com IA...',
+                'Analisando conteúdo...',
+                'Criando cortes com transições...',
+                'Gerando legendas...',
+                'Finalizando...'
+            ];
+
+            if (step < steps.length) {
+                status.textContent = steps[step];
+                progressBar.style.width = `${((step + 1) / steps.length) * 100}%`;
+                
+                setTimeout(() => updateProgress(step + 1), 2000);
+            }
+        }
+
+        // Iniciar progresso quando começar processamento
+        document.getElementById('fileForm').addEventListener('submit', function() {
+            setTimeout(() => updateProgress(0), 1000);
+        });
+        
+        document.getElementById('urlForm').addEventListener('submit', function() {
+            setTimeout(() => updateProgress(0), 1000);
+        });
+
+
+    </script>
+
+    
+</body>
+</html>
