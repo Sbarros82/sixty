@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sixty Demo - Processamento de Vídeos com IA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --light-bg: #f8fafc;
+            --white: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .container-fluid {
+            background-color: var(--white);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.3;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            border-bottom: 1px solid var(--border-color);
+            border-radius: 12px 12px 0 0 !important;
+            padding: 1.5rem;
+        }
+
+        .bg-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%) !important;
+        }
+
+        .bg-info {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%) !important;
+        }
+
+        .bg-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #047857 100%) !important;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-control, .form-select {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .alert {
+            border: none;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .badge {
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .video-preview-container {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .video-preview-container video {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .format-info {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: rgba(37, 99, 235, 0.05);
+            border-radius: 6px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .spinner-border {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .fas, .fa {
+            margin-right: 0.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1.5rem 0;
+            }
+            
+            .card-header {
+                padding: 1rem;
+            }
+            
+            .btn {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content text-center">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="fas fa-video me-3"></i>Sixty Demo
+                </h1>
+                <p class="lead mb-0">
+                    Processamento Inteligente de Vídeos com IA
+                </p>
+                <p class="mb-0 opacity-75">
+                    Crie cortes automáticos otimizados para redes sociais
+                </p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="container py-5">
+            <!-- Informações sobre o formato -->
+            <div class="alert alert-info">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-info-circle me-2"></i>Formato de Saída
+                        </h6>
+                        <p class="mb-0">
+                            <strong>Vídeo:</strong> MP4 (H.264) | 
+                            <strong>Formato:</strong> 9:16 (1080x1920) | 
+                            <strong>Áudio:</strong> AAC | 
+                            <strong>Legendas:</strong> Embutidas no vídeo | 
+                            <strong>Estilo:</strong> Fonte 11, até 3 linhas na parte inferior
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <span class="badge bg-success">
+                            <i class="fas fa-check me-1"></i>Pronto para redes sociais
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informações sobre variações -->
+            <div class="alert alert-warning">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-magic me-2"></i>Sistema de Variações Inteligentes
+                        </h6>
+                        <p class="mb-0">
+                            <strong>🎯 Variações Automáticas:</strong> Cada processamento gera cortes diferentes | 
+                            <strong>📊 Vídeos Longos:</strong> Até 30 min = variação média, +30 min = variação avançada | 
+                            <strong>🔄 Padrões:</strong> Linear, exponencial, agrupamentos e distribuição uniforme
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <span class="badge bg-warning text-dark">
+                            <i class="fas fa-random me-1"></i>Sem repetição
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Form -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-upload me-2"></i>Upload de Vídeo
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form id="uploadForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="videoFile" class="form-label">
+                                    <i class="fas fa-file-video me-1"></i>Arquivo de Vídeo
+                                </label>
+                                <input type="file" class="form-control" id="videoFile" name="video" accept="video/*" required>
+                                <div class="form-text">
+                                    Formatos aceitos: MP4, MOV, AVI (máx. 500MB)
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="youtubeUrl" class="form-label">
+                                    <i class="fab fa-youtube me-1"></i>URL do YouTube
+                                </label>
+                                <input type="url" class="form-control" id="youtubeUrl" name="youtube_url" placeholder="https://www.youtube.com/watch?v=...">
+                                <div class="form-text">
+                                    Cole o link do vídeo do YouTube
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="duration" class="form-label">
+                                    <i class="fas fa-clock me-1"></i>Duração dos Cortes
+                                </label>
+                                <select class="form-select" id="duration" name="duration" required>
+                                    <option value="15">15 segundos</option>
+                                    <option value="30" selected>30 segundos</option>
+                                    <option value="60">60 segundos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-cogs me-1"></i>Configurações
+                                </label>
+                                <div class="d-flex gap-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="autoCuts" checked>
+                                        <label class="form-check-label" for="autoCuts">
+                                            Cortes automáticos
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="subtitles" checked>
+                                        <label class="form-check-label" for="subtitles">
+                                            Legendas automáticas
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="format916" checked>
+                                        <label class="form-check-label" for="format916">
+                                            Formato 9:16
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-magic me-2"></i>Processar Vídeo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Progress Section -->
+            <div id="progressSection" class="card mb-4" style="display: none;">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cog fa-spin me-2"></i>Processando Vídeo
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="progress mb-3" style="height: 25px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <div id="progressText" class="text-center">
+                        Iniciando processamento...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" style="display: none;">
+                <h3 class="mb-4">
+                    <i class="fas fa-film me-2"></i>Vídeos Processados
+                </h3>
+                <div id="resultsContainer" class="row">
+                    <!-- Results will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Demo functionality for GitHub Pages
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show progress
+            document.getElementById('progressSection').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+            
+            // Simulate processing
+            let progress = 0;
+            const progressBar = document.querySelector('.progress-bar');
+            const progressText = document.getElementById('progressText');
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                progressBar.style.width = progress + '%';
+                
+                if (progress < 30) {
+                    progressText.textContent = 'Baixando vídeo...';
+                } else if (progress < 60) {
+                    progressText.textContent = 'Transcrevendo áudio...';
+                } else if (progress < 80) {
+                    progressText.textContent = 'Gerando cortes...';
+                } else if (progress < 100) {
+                    progressText.textContent = 'Finalizando processamento...';
+                } else {
+                    progressText.textContent = 'Concluído!';
+                    clearInterval(interval);
+                    
+                    // Show demo results
+                    setTimeout(() => {
+                        showDemoResults();
+                    }, 1000);
+                }
+            }, 500);
+        });
+        
+        function showDemoResults() {
+            document.getElementById('progressSection').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+            
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = `
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-play me-2"></i>Corte 1 (0:00 - 0:30)
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="video-preview-container mb-3">
+                                <div style="background: #000; height: 300px; display: flex; align-items: center; justify-content: center; color: white;">
+                                    <i class="fas fa-video fa-3x"></i>
+                                </div>
+                            </div>
+                            <div class="format-info">
+                                <small class="text-info">
+                                    <i class="fas fa-video me-1"></i>
+                                    <strong>Formato:</strong> MP4 (H.264) 9:16 | 
+                                    <i class="fas fa-closed-captioning me-1"></i>
+                                    <strong>Legendas:</strong> Embutidas | 
+                                    <i class="fas fa-palette me-1"></i>
+                                    <strong>Estilo:</strong> Fonte 11, até 3 linhas
+                                </small>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-download me-1"></i>Download
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-play me-2"></i>Corte 2 (0:30 - 1:00)
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="video-preview-container mb-3">
+                                <div style="background: #000; height: 300px; display: flex; align-items: center; justify-content: center; color: white;">
+                                    <i class="fas fa-video fa-3x"></i>
+                                </div>
+                            </div>
+                            <div class="format-info">
+                                <small class="text-info">
+                                    <i class="fas fa-video me-1"></i>
+                                    <strong>Formato:</strong> MP4 (H.264) 9:16 | 
+                                    <i class="fas fa-closed-captioning me-1"></i>
+                                    <strong>Legendas:</strong> Embutidas | 
+                                    <i class="fas fa-palette me-1"></i>
+                                    <strong>Estilo:</strong> Fonte 11, até 3 linhas
+                                </small>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-download me-1"></i>Download
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
